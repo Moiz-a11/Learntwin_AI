@@ -2,6 +2,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.digital_twin import router as digital_twin_router
 from app.api.v1.routes import router as api_router
 from app.core.config import settings
 from app.core.logging import configure_logging
@@ -24,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api/v1")
+app.include_router(digital_twin_router, prefix="/api/v1")
 
 
 @app.on_event("startup")
