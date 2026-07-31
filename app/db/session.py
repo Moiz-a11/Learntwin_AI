@@ -1,7 +1,10 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+"""Compatibility shim for modules that import `app.db.session`.
 
-from app.core.config import settings
+This module re-exports the engine and SessionLocal created in
+`app.db.database` so existing imports continue to work while the database
+package centralizes engine/session creation.
+"""
 
-engine = create_engine(settings.DATABASE_URL, future=True)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
+from app.db.database import engine, SessionLocal
+
+__all__ = ["engine", "SessionLocal"]

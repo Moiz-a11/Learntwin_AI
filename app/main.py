@@ -31,6 +31,24 @@ async def on_startup() -> None:
     logger.info("Starting LearnTwin AI Core application")
     app.state.logger = logger
 
+    # Initialize database schema in development mode. We import model modules
+    # before calling `create_all` so SQLAlchemy metadata includes all tables.
+    try:
+        from app.db.base import Base
+        from app.db.database import engine
+
+        # ensure models are imported so they are registered on Base.metadata
+        import app.models.digital_twin  # noqa: F401
+
+        if settings.DEBUG:
+            logger.info("DEBUG mode enabled — creating database tables (create_all)")
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database tables ensured")
+        else:
+            logger.info("DEBUG mode disabled — skipping automatic create_all on startup")
+    except Exception as exc:
+        logger.exception("Error initializing database during startup: %s", exc)
+
 
 @app.on_event("shutdown")
 async def on_shutdown() -> None:
